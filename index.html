@@ -1068,9 +1068,24 @@ render();
   el.hidden=false;
   $('#inappX').onclick=()=>{el.hidden=true;try{localStorage.setItem('sleigh.inappDismissed','1')}catch(e){}};
   $('#inappCopy').onclick=()=>{const u=location.href.split('#')[0];
-    try{navigator.clipboard.writeText(u).then(()=>toast(`Link copied. Paste it into ${ios?'Safari':'your browser'}.`),()=>toast(u))}catch(e){toast(u)}};
+    copyText(u,()=>toast(`Link copied. Paste it into ${ios?'Safari':'your browser'}.`),()=>toast(u))};
 })();
 
+/* Copy that works everywhere: the modern clipboard where the page is secure,
+   and the older copy command (which iPhones still honor) everywhere else. */
+function legacyCopy(text){
+  const t=document.createElement('textarea');t.value=text;t.setAttribute('readonly','');
+  t.style.cssText='position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px';
+  document.body.appendChild(t);t.focus();t.select();t.setSelectionRange(0,text.length);
+  let ok=false;try{ok=document.execCommand('copy')}catch(e){}
+  t.remove();return ok;
+}
+function copyText(text,onOk,onFail){
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(text).then(onOk,()=>{legacyCopy(text)?onOk():onFail()});return;
+  }
+  legacyCopy(text)?onOk():onFail();
+}
 /* ---------- share with a partner ----------
    The whole list rides inside the link after the #. Browsers never send that part
    to any server, so the list is never uploaded anywhere. */
@@ -1119,10 +1134,13 @@ async function openShare(){
       <li>It's a copy, not live. After big changes, share again. When they share back, you can combine your lists.</li>
       <li>Anyone with the link can see the list, so send it only to your partner.</li>
     </ul>
+    <div class="field" id="shManual" hidden><label for="shManualText">Your share link</label><textarea id="shManualText" rows="3" readonly></textarea></div>
     <div class="sheet-actions"><button class="btn ghost" id="shCancel">Cancel</button><div class="right">
       <button class="btn" id="shCopy">Copy link</button>${navigator.share?`<button class="btn primary" id="shSend">${SHARE_ICON}Send link</button>`:''}</div></div>`,()=>{
     $('#shCancel').onclick=close;
-    const copyIt=()=>{try{navigator.clipboard.writeText(url).then(()=>{close();toast('Link copied. Text it to your partner.')},()=>toast("Copying isn't allowed here."))}catch(e){toast("Copying isn't allowed here.")}};
+    const copyIt=()=>copyText(url,()=>{close();toast('Link copied. Text it to your partner.')},()=>{
+      $('#shManual').hidden=false;const t=$('#shManualText');t.value=url;t.focus();t.setSelectionRange(0,url.length);
+      toast('Press and hold the link to copy it.')});
     $('#shCopy').onclick=copyIt;
     if($('#shSend'))$('#shSend').onclick=()=>{
       navigator.share({title:'Our Sleigh gift list',text:"Here's our holiday gift list on Sleigh. Open the link to add it to your phone.",url})
