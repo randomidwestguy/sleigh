@@ -1032,6 +1032,9 @@ $('#adder').onsubmit=e=>{
   openItem({parsed:p,prefill:{url:p.url,store:p.store,name:p.name}});$('#linkIn').value='';
 };
 $('#noLink').onclick=()=>openItem({});
+// shorter hint on narrow screens so it never gets cut off
+(function(){const mq=matchMedia('(max-width:520px)');const set=()=>{$('#linkIn').placeholder=mq.matches?'Paste a gift link':'Paste a link from Amazon, Target, Walmart, anywhere'};set();
+  mq.addEventListener?mq.addEventListener('change',set):mq.addListener(set)})();
 // pasting a link (or a whole share message) opens the gift form right away
 $('#linkIn').addEventListener('paste',e=>{
   const t=(e.clipboardData||window.clipboardData)?.getData('text');if(!t)return;
