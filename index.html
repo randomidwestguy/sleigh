@@ -104,7 +104,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .amt.ordered{color:var(--pine)}
 .amt.todo{color:#A8740E}
 .lab{font-size:13px;color:var(--muted)}
-@media (max-width:520px){.amounts>div{padding:0 14px}.amounts>div:nth-child(3){padding-left:0;border-left:0;flex-basis:100%}}
+@media (max-width:620px){.amounts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.amounts>div{padding:0 10px;min-width:0}.amounts>div:first-child{padding-left:0}.amt{font-size:clamp(19px,5.6vw,28px);letter-spacing:-.03em}.lab{font-size:12px;line-height:1.35}}
 /* kids */
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .section-head h2{margin:0;font-size:18px;font-weight:700;letter-spacing:-.01em}
