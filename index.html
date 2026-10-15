@@ -297,6 +297,19 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .add-row:hover{background:var(--pine-soft)}
 .empty-sub+.add-row{border-top:0}
 
+/* phone header: logo left, countdown top right, share and saved status underneath */
+@media (max-width:520px){
+  header{display:grid;grid-template-columns:auto auto 1fr auto;align-items:center;column-gap:12px;row-gap:10px}
+  header .brand{grid-column:1 / 4;grid-row:1;min-width:0}
+  header .head-actions{display:contents}
+  header .countdown{grid-column:4;grid-row:1;margin-top:0;gap:8px}
+  header #daysLbl{display:block;max-width:70px;font-size:12px;line-height:1.25}
+  header .orn{flex:none}
+  header .share-btn{grid-column:1;grid-row:2;margin-top:0;justify-self:start}
+  header .savestat{grid-column:2;grid-row:2;margin-top:0}
+  .brand svg{width:42px;height:auto}
+}
+
 /* footer */
 .foot{border-top:1px solid var(--line);padding-top:24px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 24px;align-items:start;color:var(--muted);font-size:13px}
 .foot-brand{font-family:"Grand Hotel","Brush Script MT",cursive;font-size:30px;line-height:1;color:var(--berry)}
