@@ -171,7 +171,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .price:hover{background:var(--snow);border-color:var(--line)}
 .price.none{color:var(--muted);font-weight:600;font-size:13px;border:1.5px dashed #C9D3CE;background:#fff}
 .price.none:hover{border-color:var(--pine);color:var(--pine);background:var(--pine-soft)}
-.price-in{width:96px;justify-self:end;border:1.5px solid var(--pine);border-radius:10px;padding:5px 8px;font-weight:700;text-align:right;box-shadow:0 0 0 3px var(--pine-soft);outline:0;background:#fff}
+.price-in{font-size:16px;width:96px;justify-self:end;border:1.5px solid var(--pine);border-radius:10px;padding:5px 8px;font-weight:700;text-align:right;box-shadow:0 0 0 3px var(--pine-soft);outline:0;background:#fff}
 .status{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:6px 14px 6px 7px;font-size:13px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;min-width:156px;transition:transform .12s,background .15s,border-color .15s}
 .status .box{width:20px;height:20px;border-radius:50%;border:2px solid #B9C5BF;display:grid;place-items:center;flex:none;transition:all .15s}
 .status:hover{border-color:var(--pine)}
@@ -303,12 +303,13 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 /* sheet */
 .scrim{position:fixed;inset:0;background:rgba(22,35,30,.38);display:flex;align-items:flex-end;justify-content:center;z-index:20;padding:16px;padding-bottom:max(16px,env(safe-area-inset-bottom,0px));animation:fade .18s}
 @media (min-width:640px){.scrim{align-items:center}}
-.sheet{background:var(--card);border-radius:22px;width:100%;max-width:520px;max-height:calc(100% - 16px);overflow:auto;padding:22px;box-shadow:0 20px 60px rgba(22,35,30,.25);animation:rise .22s cubic-bezier(.2,.9,.3,1.2)}
+.sheet{background:var(--card);border-radius:22px;width:100%;max-width:520px;max-height:calc(100% - 16px);overflow-x:hidden;overflow-y:auto;padding:22px;min-width:0;box-shadow:0 20px 60px rgba(22,35,30,.25);animation:rise .22s cubic-bezier(.2,.9,.3,1.2)}
 .sheet h2{margin:0 0 4px;font-size:20px;letter-spacing:-.01em}
 .sheet .lede{margin:0 0 16px;color:var(--muted);font-size:14px}
 .field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .field label,.field .lbl{font-size:13px;font-weight:600}
-.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--snow);width:100%;min-width:0}
+.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--snow);width:100%;min-width:0;font-size:16px}
+.field{min-width:0}
 .field input:focus,.field select:focus,.field textarea:focus{outline:0;border-color:var(--pine);background:#fff;box-shadow:0 0 0 3px var(--pine-soft)}
 .field .hint{font-size:12px;color:var(--muted)}
 .field input::placeholder,.field textarea::placeholder{color:#A7B2AD;font-weight:400}
@@ -326,8 +327,9 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .kidpick button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px 4px 4px;display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
 .kidpick button[aria-pressed="true"]{border-color:var(--kc);background:color-mix(in srgb,var(--kc) 10%,#fff)}
 .kidpick .each .av{width:auto;padding:0 6px;border-radius:99px;font-size:13px;letter-spacing:-2px}
-.emojis{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
-.emojis button{border:2px solid transparent;background:var(--snow);border-radius:10px;font-size:22px;aspect-ratio:1;max-width:100%}
+.emojis{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px}
+.emojis button{border:2px solid transparent;background:var(--snow);border-radius:10px;font-size:22px;aspect-ratio:1;max-width:100%;min-width:0;padding:0;display:grid;place-items:center;line-height:1}
+@media (max-width:480px){.emojis{grid-template-columns:repeat(6,minmax(0,1fr))}.sheet{padding:18px}}
 .emojis button[aria-pressed="true"]{border-color:var(--ink);background:#fff}
 .swatches{display:flex;gap:8px;flex-wrap:wrap}
 .swatches button{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
