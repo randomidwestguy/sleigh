@@ -288,6 +288,10 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .savestat.saving .sv-ic::after{opacity:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+.share-btn{margin-top:6px}
+.share-notes{margin:0 0 16px;padding-left:18px;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:6px}
+.share-notes b{color:var(--ink)}
+
 /* footer */
 .foot{border-top:1px solid var(--line);padding-top:24px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 24px;align-items:start;color:var(--muted);font-size:13px}
 .foot-brand{font-family:"Grand Hotel","Brush Script MT",cursive;font-size:30px;line-height:1;color:var(--berry)}
@@ -393,6 +397,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
       <h1>Sleigh</h1>
     </div>
     <div class="head-actions">
+      <button class="btn small share-btn" id="shareBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Share</button>
       <span class="savestat" id="saveBtn" role="status" hidden title="Your list saves automatically on this device"><span class="sv-ic" aria-hidden="true"></span><span id="saveLbl">Saved</span></span>
       <div class="countdown"><span class="orn num" id="days">0</span><span id="daysLbl"><b>sleeps</b> till Christmas</span></div>
     </div>
@@ -436,9 +441,10 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
     <div class="lock"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></div>
     <div>
       <h3>Your list saves as you go</h3>
-      <p>Every change is saved right here in this browser. Come back on this phone or computer anytime and your list will be waiting. Want it somewhere else? Export it to a spreadsheet.</p>
+      <p>Every change is saved right here in this browser. Come back on this phone or computer anytime and your list will be waiting. Shopping with a partner? Share your list and it copies to their phone too.</p>
     </div>
     <div class="vault-actions">
+      <button class="btn primary" id="shareBottom">Share with your partner</button>
       <button class="btn export" id="exportBottom">Export to spreadsheet</button>
       <button class="btn ghost small" id="openReset">Start over</button>
     </div>
@@ -630,7 +636,7 @@ function render(){
   document.querySelectorAll('[data-status]').forEach(b=>b.onclick=()=>{
     const it=I.find(i=>i.id===b.dataset.status);const idx=STATUSES.findIndex(s=>s[0]===it.status);
     const r=b.getBoundingClientRect();
-    it.status=it.status==='ordered'?'todo':'ordered';lastPop=it.status==='ordered'?it.id:null;save();render();lastPop=null;
+    it.status=it.status==='ordered'?'todo':'ordered';it.t=Date.now();lastPop=it.status==='ordered'?it.id:null;save();render();lastPop=null;
     const nb=document.querySelector(`[data-status="${it.id}"]`);if(nb){nb.classList.add('pop');nb.focus()}
     if(it.status==='ordered'){burst(r.left+18,r.top+r.height/2);
       const k=kidById(it.kidId),ki=S.items.filter(i=>i.kidId===it.kidId);
@@ -649,7 +655,7 @@ function render(){
     const commit=keep=>{if(done)return;done=true;
       if(keep){const v=inp.value.trim();const n=v===''?null:Math.max(0,parseFloat(v));
         const changed=(n??null)!==(it.price??null)&&!(v!==''&&isNaN(n));
-        if(changed){it.price=v===''?null:n;S.example=false;save()}}
+        if(changed){it.price=v===''?null:n;it.t=Date.now();S.example=false;save()}}
       render();};
     inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();commit(true)}else if(e.key==='Escape'){commit(false)}};
     inp.onblur=()=>commit(true);
@@ -855,6 +861,7 @@ function openItem(opts){
       it.store=$('#iStore').value.trim();it.spot=$('#iSpot').value.trim();it.url=$('#iUrl').value.trim();
       if(isOtherPick())it.from='us';
       if(it.url&&!/^https?:\/\//i.test(it.url))it.url='https://'+it.url;
+      it.t=Date.now();
       if(editing)Object.assign(editing,it);
       else if(it.kidId==='__each')S.items.push(...kidsOnly().map(k=>({...it,id:uid(),kidId:k.id})));
       else S.items.push({id:uid(),...it});
@@ -1063,6 +1070,104 @@ render();
   $('#inappCopy').onclick=()=>{const u=location.href.split('#')[0];
     try{navigator.clipboard.writeText(u).then(()=>toast(`Link copied. Paste it into ${ios?'Safari':'your browser'}.`),()=>toast(u))}catch(e){toast(u)}};
 })();
+
+/* ---------- share with a partner ----------
+   The whole list rides inside the link after the #. Browsers never send that part
+   to any server, so the list is never uploaded anywhere. */
+function b64url(bytes){let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function unb64url(str){const s=atob(str.replace(/-/g,'+').replace(/_/g,'/'));const b=new Uint8Array(s.length);for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i);return b}
+function cleanUrl(raw){
+  if(!raw)return '';
+  try{const u=new URL(raw);const asin=u.pathname.match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i);
+    if(/amazon\./i.test(u.hostname)&&asin)return 'https://'+u.hostname+'/dp/'+asin[1];
+    return u.origin+u.pathname}catch(e){return raw}
+}
+function packList(){
+  return {v:1,
+    k:S.kids.map(k=>[k.id,k.nick,k.emoji,k.color,k.budget||0,k.group==='other'?1:0,k.rel||'']),
+    i:S.items.map(i=>[i.id,i.kidId,i.name||'',cleanUrl(i.url),i.store||'',i.price==null||i.price===''?null:+i.price,i.bucket==='stocking'?1:0,i.status==='ordered'?1:0,i.spot||'',i.from==='santa'?1:0,i.t||0])};
+}
+function unpackList(o){
+  return {v:1,
+    kids:(o.k||[]).map(a=>({id:a[0],nick:a[1],emoji:a[2],color:a[3],budget:a[4]||0,group:a[5]?'other':'kid',rel:a[6]||''})),
+    items:(o.i||[]).map(a=>({id:a[0],kidId:a[1],name:a[2],url:a[3],store:a[4],price:a[5],bucket:a[6]?'stocking':'tree',status:a[7]?'ordered':'todo',spot:a[8],from:a[9]?'santa':'us',t:a[10]||0}))};
+}
+async function encodeShare(obj){
+  const bytes=new TextEncoder().encode(JSON.stringify(obj));
+  if('CompressionStream' in window){try{
+    const buf=await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer();
+    return 'z'+b64url(new Uint8Array(buf))}catch(e){}}
+  return 'j'+b64url(bytes);
+}
+async function decodeShare(code){
+  const kind=code[0],bytes=unb64url(code.slice(1));
+  let text;
+  if(kind==='z'){const buf=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();text=new TextDecoder().decode(buf)}
+  else text=new TextDecoder().decode(bytes);
+  return unpackList(JSON.parse(text));
+}
+const SHARE_ICON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+async function openShare(){
+  if(S.example||!S.items.length){toast('Add your own people and gifts first, then share');return}
+  let url;
+  try{url=location.origin+location.pathname+'#s='+(await encodeShare(packList()))}catch(e){toast("This browser can't make a share link");return}
+  const np=S.kids.length,ng=S.items.length;
+  sheet(`<h2>Share with your partner</h2>
+    <p class="lede">Send them this link. When they open it, your list of ${np} ${np===1?'person':'people'} and ${ng} gift${ng===1?'':'s'} is copied to their phone or computer.</p>
+    <ul class="share-notes">
+      <li>The list travels inside the link itself. It's never uploaded anywhere.</li>
+      <li>It's a copy, not live. After big changes, share again. When they share back, you can combine your lists.</li>
+      <li>Anyone with the link can see the list, so send it only to your partner.</li>
+    </ul>
+    <div class="sheet-actions"><button class="btn ghost" id="shCancel">Cancel</button><div class="right">
+      <button class="btn" id="shCopy">Copy link</button>${navigator.share?`<button class="btn primary" id="shSend">${SHARE_ICON}Send link</button>`:''}</div></div>`,()=>{
+    $('#shCancel').onclick=close;
+    const copyIt=()=>{try{navigator.clipboard.writeText(url).then(()=>{close();toast('Link copied. Text it to your partner.')},()=>toast("Copying isn't allowed here."))}catch(e){toast("Copying isn't allowed here.")}};
+    $('#shCopy').onclick=copyIt;
+    if($('#shSend'))$('#shSend').onclick=()=>{
+      navigator.share({title:'Our Sleigh gift list',text:"Here's our holiday gift list on Sleigh. Open the link to add it to your phone.",url})
+        .then(()=>close(),err=>{if(!err||err.name!=='AbortError')copyIt()});
+    };
+  });
+}
+function combineLists(inc){
+  const map={};
+  for(const k of inc.kids){
+    const ex=S.kids.find(x=>x.id===k.id)||S.kids.find(x=>x.nick.trim().toLowerCase()===k.nick.trim().toLowerCase()&&(x.group||'kid')===(k.group||'kid'));
+    if(ex){map[k.id]=ex.id;Object.assign(ex,{...k,id:ex.id})}else{S.kids.push(k);map[k.id]=k.id}
+  }
+  for(const i of inc.items){
+    i.kidId=map[i.kidId]||i.kidId;
+    const ex=S.items.find(x=>x.id===i.id);
+    if(!ex)S.items.push(i);else if((i.t||0)>=(ex.t||0))Object.assign(ex,i);
+  }
+}
+async function receiveShare(){
+  const h=location.hash;if(!h.startsWith('#s='))return;
+  const clearHash=()=>{try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}};
+  let inc;
+  try{inc=await decodeShare(h.slice(3));if(!Array.isArray(inc.kids)||!Array.isArray(inc.items))throw 0}
+  catch(e){clearHash();toast("That share link looks incomplete. Ask them to send it again.");return}
+  const np=inc.kids.length,ng=inc.items.length;
+  const fresh=S.example||(!S.kids.length&&!S.items.length);
+  const done=msg=>{S.example=false;filterKid='all';save();clearHash();close();render();toast(msg);flyby()};
+  sheet(`<h2>A Sleigh list was shared with you</h2>
+    <p class="lede">${np} ${np===1?'person':'people'} and ${ng} gift${ng===1?'':'s'}.${fresh?' Open it to save it on this device.':' What would you like to do with it?'}</p>
+    ${fresh?'':`<ul class="share-notes"><li><b>Combine</b> adds their gifts to yours. Gifts you both have keep the newest changes.</li><li><b>Replace</b> swaps your list for theirs.</li></ul>`}
+    <div class="sheet-actions"><button class="btn ghost" id="rcNo">Not now</button><div class="right">
+      ${fresh?'<button class="btn primary" id="rcOpen">Open list</button>':'<button class="btn" id="rcReplace">Replace mine</button><button class="btn primary" id="rcMerge">Combine lists</button>'}</div></div>`,()=>{
+    $('#rcNo').onclick=()=>{clearHash();close()};
+    if(fresh)$('#rcOpen').onclick=()=>{S={v:1,kids:inc.kids,items:inc.items};done('Your shared list is here')};
+    else{
+      $('#rcReplace').onclick=()=>{S={v:1,kids:inc.kids,items:inc.items};done('List replaced')};
+      $('#rcMerge').onclick=()=>{combineLists(inc);done('Lists combined')};
+    }
+  });
+}
+$('#shareBtn').onclick=()=>openShare();
+$('#shareBottom').onclick=()=>openShare();
+addEventListener('hashchange',receiveShare);
+receiveShare();
 
 /* gentle snowfall */
 (function(){
