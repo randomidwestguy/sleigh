@@ -104,7 +104,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .amt.ordered{color:var(--pine)}
 .amt.todo{color:#A8740E}
 .lab{font-size:13px;color:var(--muted)}
-@media (max-width:620px){.amounts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.amounts>div{padding:0 10px;min-width:0}.amounts>div:first-child{padding-left:0}.amt{font-size:clamp(19px,5.6vw,28px);letter-spacing:-.03em}.lab{font-size:12px;line-height:1.35}}
+@media (max-width:620px){.amounts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.amounts>div{padding:0 10px;min-width:0}.amounts>div:first-child{padding-left:0}.amt{font-size:clamp(19px,5.6vw,28px);letter-spacing:-.03em}.lab{font-size:12px;line-height:1.35}.pile-row{margin-top:34px}.orderby{margin-top:22px}}
 /* kids */
 .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
 .section-head h2{margin:0;font-size:18px;font-weight:700;letter-spacing:-.01em}
@@ -209,7 +209,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 /* whimsy */
 #snow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 .wrap{position:relative;z-index:1}
-.pile-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+.pile-row{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;margin-top:28px}
 .pile{display:flex;flex-wrap:wrap;gap:5px;align-items:flex-end;max-width:100%}
 .pile i{position:relative;width:18px;height:16px;border-radius:3px;border:1.5px dashed #C3CEC8;background:transparent;transition:transform .25s}
 .pile i.on{border:0;height:17px;background:
@@ -274,7 +274,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .even-note.ok{color:var(--pine)}
 @media (max-width:520px){.even-row{grid-template-columns:minmax(0,90px) minmax(0,1fr) minmax(0,1fr)}}
 /* order-by */
-.orderby{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--muted)}
+.orderby{display:flex;align-items:center;gap:8px;margin-top:20px;font-size:13px;color:var(--muted)}
 .orderby svg{flex:none;color:var(--pine)}
 .orderby b{color:var(--ink)}
 .orderby.late svg{color:var(--berry)}
@@ -393,7 +393,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
       <h1>Sleigh</h1>
     </div>
     <div class="head-actions">
-      <span class="savestat" id="saveBtn" role="status" title="Your list saves automatically on this device"><span class="sv-ic" aria-hidden="true"></span><span id="saveLbl">Saved</span></span>
+      <span class="savestat" id="saveBtn" role="status" hidden title="Your list saves automatically on this device"><span class="sv-ic" aria-hidden="true"></span><span id="saveLbl">Saved</span></span>
       <div class="countdown"><span class="orn num" id="days">0</span><span id="daysLbl"><b>sleeps</b> till Christmas</span></div>
     </div>
   </header>
@@ -1013,7 +1013,7 @@ async function saveFile(filename,data){
 }
 function flashSaved(){
   const b=$('#saveBtn');if(!b)return;
-  b.classList.add('saving');$('#saveLbl').textContent='Saving…';
+  b.hidden=false;b.classList.add('saving');$('#saveLbl').textContent='Saving…';
   clearTimeout(flashSaved.t);flashSaved.t=setTimeout(()=>{b.classList.remove('saving');$('#saveLbl').textContent='Saved'},700);
 }
 $('#exportBottom').onclick=()=>openExport();
