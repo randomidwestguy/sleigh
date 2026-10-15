@@ -442,7 +442,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
     <div class="lock"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></div>
     <div>
       <h3>Your list saves as you go</h3>
-      <p>Every change is saved right here in this browser. Come back on this phone or computer anytime and your list will be waiting. Shopping with a partner? Share your list and it copies to their phone too.</p>
+      <p>It stays in this browser. Share it to copy it to your partner's phone.</p>
     </div>
     <div class="vault-actions">
       <button class="btn primary" id="shareBottom">Share with your partner</button>
@@ -1131,12 +1131,7 @@ async function openShare(){
   try{url=location.origin+location.pathname+'#s='+(await encodeShare(packList()))}catch(e){toast("This browser can't make a share link");return}
   const np=S.kids.length,ng=S.items.length;
   sheet(`<h2>Share with your partner</h2>
-    <p class="lede">Send them this link. When they open it, your list of ${np} ${np===1?'person':'people'} and ${ng} gift${ng===1?'':'s'} is copied to their phone or computer.</p>
-    <ul class="share-notes">
-      <li>The list travels inside the link itself. It's never uploaded anywhere.</li>
-      <li>It's a copy, not live. After big changes, share again. When they share back, you can combine your lists.</li>
-      <li>Anyone with the link can see the list, so send it only to your partner.</li>
-    </ul>
+    <p class="lede">Send this link to your partner. Opening it copies your list to their phone. Only send it to them, since anyone with the link can see it.</p>
     <div class="field" id="shManual" hidden><label for="shManualText">Your share link</label><textarea id="shManualText" rows="3" readonly></textarea></div>
     <div class="sheet-actions"><button class="btn ghost" id="shCancel">Cancel</button><div class="right">
       <button class="btn" id="shCopy">Copy link</button>${navigator.share?`<button class="btn primary" id="shSend">${SHARE_ICON}Send link</button>`:''}</div></div>`,()=>{
