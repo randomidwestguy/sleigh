@@ -305,8 +305,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
   header .countdown{grid-column:4;grid-row:1;margin-top:0;gap:8px}
   header #daysLbl{display:block;max-width:70px;font-size:12px;line-height:1.25}
   header .orn{flex:none}
-  header .share-btn{grid-column:1;grid-row:2;margin-top:0;justify-self:start}
-  header .savestat{grid-column:2;grid-row:2;margin-top:0}
+  header .savestat{grid-column:1 / -1;grid-row:2;margin-top:0;justify-self:start}
   .brand svg{width:42px;height:auto}
 }
 
@@ -417,7 +416,6 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
       <h1>Sleigh</h1>
     </div>
     <div class="head-actions">
-      <button class="btn small share-btn" id="shareBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Share</button>
       <span class="savestat" id="saveBtn" role="status" hidden title="Your list saves automatically on this device"><span class="sv-ic" aria-hidden="true"></span><span id="saveLbl">Saved</span></span>
       <div class="countdown"><span class="orn num" id="days">0</span><span id="daysLbl"><b>sleeps</b> till Christmas</span></div>
     </div>
@@ -450,6 +448,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
     <div class="listbar">
       <div class="filters" id="bucketFilter"></div>
       <div class="listbar-right">
+      <button class="btn export" id="shareBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Share list</button>
       <button class="btn export" id="openExport"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export to spreadsheet</button>
       </div>
     </div>
