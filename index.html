@@ -601,7 +601,7 @@ function render(){
     <div class="tl"><span>Still to order <em>${g(todo.length)}</em></span><i aria-hidden="true"></i><b>${money(tT)}</b></div>
     <div class="tl total"><span>Total</span><i aria-hidden="true"></i><b>${money(oT+tT)}</b></div></div>`:'';
   $('#totals').innerHTML=`${I.length?`<div class="pile-row"><div class="pile" role="img" aria-label="${ordered.length} of ${I.length} gifts ordered">${pileHTML(I)}</div>
-    <span class="pile-lab">${ordered.length===I.length?'<b>Every gift is ordered.</b> Time for cocoa.':`<b>${ordered.length} of ${I.length}</b> in the pile`}</span></div>`:''}${orderByHTML(todo.length)}`;
+    <span class="pile-lab">${ordered.length===I.length?'<b>Every gift is ordered.</b> Time for cocoa.':`<b>${ordered.length} of ${I.length}</b> in the pile`}</span></div>`:''}`;
 
   // people tags (pile helper defined below)
   const tag=k=>{
