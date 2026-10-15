@@ -279,6 +279,15 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .orderby b{color:var(--ink)}
 .orderby.late svg{color:var(--berry)}
 
+/* save status */
+.savestat{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--pine);margin-top:6px;white-space:nowrap}
+.savestat .sv-ic{width:16px;height:16px;border-radius:50%;background:var(--pine-soft);position:relative;transition:background .2s}
+.savestat .sv-ic::after{content:"";position:absolute;left:5px;top:3px;width:4px;height:7px;border:solid var(--pine);border-width:0 2px 2px 0;transform:rotate(45deg);transition:opacity .2s}
+.savestat.saving{color:var(--muted)}
+.savestat.saving .sv-ic{background:transparent;border:2px solid var(--line);border-top-color:var(--pine);width:14px;height:14px;animation:spin .7s linear infinite}
+.savestat.saving .sv-ic::after{opacity:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* footer */
 .foot{border-top:1px solid var(--line);padding-top:24px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 24px;align-items:start;color:var(--muted);font-size:13px}
 .foot-brand{font-family:"Grand Hotel","Brush Script MT",cursive;font-size:30px;line-height:1;color:var(--berry)}
@@ -384,7 +393,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
       <h1>Sleigh</h1>
     </div>
     <div class="head-actions">
-      <button class="btn savebtn" id="saveBtn" aria-live="polite"><span class="sv-ic" aria-hidden="true"></span><span id="saveLbl">Save</span></button>
+      <span class="savestat" id="saveBtn" role="status" title="Your list saves automatically on this device"><span class="sv-ic" aria-hidden="true"></span><span id="saveLbl">Saved</span></span>
       <div class="countdown"><span class="orn num" id="days">0</span><span id="daysLbl"><b>sleeps</b> till Christmas</span></div>
     </div>
   </header>
@@ -1004,10 +1013,9 @@ async function saveFile(filename,data){
 }
 function flashSaved(){
   const b=$('#saveBtn');if(!b)return;
-  b.classList.add('saved');$('#saveLbl').textContent='Saved';
-  clearTimeout(flashSaved.t);flashSaved.t=setTimeout(()=>{b.classList.remove('saved');$('#saveLbl').textContent='Save'},1800);
+  b.classList.add('saving');$('#saveLbl').textContent='Saving…';
+  clearTimeout(flashSaved.t);flashSaved.t=setTimeout(()=>{b.classList.remove('saving');$('#saveLbl').textContent='Saved'},700);
 }
-$('#saveBtn').onclick=()=>{save();toast('Saved on this device. Your list will be here when you come back.')};
 $('#exportBottom').onclick=()=>openExport();
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 
