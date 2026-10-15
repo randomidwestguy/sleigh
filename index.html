@@ -237,7 +237,9 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .inapp .x:hover{background:#F6E4BC}
 
 .santa-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--berry);background:var(--berry-soft);border-radius:99px;padding:2px 8px 2px 6px;margin-left:6px;vertical-align:2px;white-space:nowrap}
-.listbar-right{display:flex;gap:8px;flex-wrap:wrap}
+.listbar-right{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.tool-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--muted);transition:color .15s,border-color .15s}
+.tool-btn:hover{color:var(--pine);border-color:var(--pine)}
 .btn.eve{background:#22314A;color:#fff;border-color:#22314A}
 .btn.eve:hover{background:#2E4062}
 .chip.santa-chip[aria-pressed="true"]{background:var(--berry);border-color:var(--berry)}
@@ -448,8 +450,8 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
     <div class="listbar">
       <div class="filters" id="bucketFilter"></div>
       <div class="listbar-right">
-      <button class="btn export" id="shareBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Share list</button>
-      <button class="btn export" id="openExport"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export to spreadsheet</button>
+      <button class="tool-btn" id="shareBtn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>Share</button>
+      <button class="tool-btn" id="openExport" title="Export to a spreadsheet"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export</button>
       </div>
     </div>
     <div id="list"></div>
