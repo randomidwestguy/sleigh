@@ -215,7 +215,9 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .pile i.on{border:0;height:17px;background:
   linear-gradient(90deg,transparent 7px,rgba(255,255,255,.9) 7px 11px,transparent 11px),
   linear-gradient(transparent 6px,rgba(255,255,255,.9) 6px 9px,transparent 9px),var(--kc)}
-.pile i.on::before{content:"";position:absolute;left:50%;top:-5px;width:10px;height:6px;margin-left:-5px;border-radius:50% 50% 2px 2px;border:2px solid var(--kc);border-bottom:0;background:transparent}
+.pile i.on::before,.pile i.on::after{content:"";position:absolute;top:-5px;left:50%;width:7px;height:6px;border:2px solid var(--kc);background:#fff;border-radius:70% 20% 70% 20%}
+.pile i.on::before{margin-left:-8px;transform:rotate(18deg)}
+.pile i.on::after{margin-left:1px;transform:scaleX(-1) rotate(18deg)}
 .pile i.new{animation:drop .5s cubic-bezier(.3,1.6,.5,1)}
 .pile i:nth-child(3n+1).on{transform:rotate(-4deg)}
 .pile i:nth-child(4n+2).on{transform:rotate(3deg)}
@@ -312,17 +314,20 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
   .brand svg{width:42px;height:auto}
 }
 
-/* tally: written like the bottom of a shopping list */
-.tally{max-width:440px;display:flex;flex-direction:column;gap:10px;font-size:17px;font-weight:500}
+/* tally: a little paper receipt at the bottom of the list */
+#totals:empty{display:none}
+#totals>.pile-row:first-child{margin-top:0}
+#tally:empty{display:none}
+.receipt{position:relative;max-width:420px;margin:0 auto;background:var(--card);border-radius:18px 18px 0 0;padding:22px 24px 30px;box-shadow:0 1px 2px rgba(22,35,30,.05),0 8px 24px rgba(22,35,30,.07);display:flex;flex-direction:column;gap:12px;font-size:16px;font-weight:500}
+.receipt::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:8px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 8'%3E%3Cpath d='M0 0H14L7 8Z' fill='%23ffffff'/%3E%3C/svg%3E") 0 0/14px 8px repeat-x;filter:drop-shadow(0 3px 2px rgba(22,35,30,.06))}
+.receipt h2{margin:0 0 2px;font-family:"Grand Hotel","Brush Script MT",cursive;font-weight:400;font-size:34px;line-height:1;color:var(--berry);text-align:center}
 .tl{display:flex;align-items:baseline;gap:10px}
 .tl span{white-space:nowrap}
-.tl em{font-style:normal;color:var(--muted);font-size:14px;margin-left:4px}
-.tl i{flex:1;min-width:16px;border-bottom:2px dotted #C3CEC8;transform:translateY(-5px)}
+.tl em{font-style:normal;color:var(--muted);font-size:13px;margin-left:4px}
+.tl i{flex:1;min-width:16px;border-bottom:2px dotted #CCD5D0;transform:translateY(-5px)}
 .tl b{font-weight:700;font-variant-numeric:tabular-nums}
-.tl b.ordered{color:var(--pine)}
-.tl b.todo{color:#A8740E}
-.tl.total{border-top:2px solid var(--ink);padding-top:12px;margin-top:2px;font-size:20px;font-weight:700}
-.tl.total b{font-size:24px;letter-spacing:-.01em}
+.tl.total{border-top:2px dashed #CCD5D0;padding-top:14px;margin-top:2px;font-weight:700}
+.tl.total i{visibility:hidden}
 
 /* footer */
 .foot{border-top:1px solid var(--line);padding-top:24px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 24px;align-items:start;color:var(--muted);font-size:13px}
@@ -470,6 +475,8 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
     <div id="list"></div>
   </section>
 
+  <section id="tally" aria-label="Spending tally"></section>
+
 
   <footer class="foot">
     <div class="foot-brand">Sleigh</div>
@@ -592,11 +599,12 @@ function render(){
   const ordered=I.filter(i=>i.status==='ordered'),todo=I.filter(i=>i.status!=='ordered');
   const oT=sumItems(ordered,()=>true),tT=sumItems(todo,()=>true);
   const g=n=>n+(n===1?' gift':' gifts');
-  $('#totals').innerHTML=`<div class="tally">
-    <div class="tl"><span>Ordered <em>${g(ordered.length)}</em></span><i aria-hidden="true"></i><b class="ordered">${money(oT)}</b></div>
-    <div class="tl"><span>Still to order <em>${g(todo.length)}</em></span><i aria-hidden="true"></i><b class="todo">${money(tT)}</b></div>
-    <div class="tl total"><span>Total</span><i aria-hidden="true"></i><b>${money(oT+tT)}</b></div></div>
-    ${I.length?`<div class="pile-row"><div class="pile" role="img" aria-label="${ordered.length} of ${I.length} gifts ordered">${pileHTML(I)}</div>
+  $('#tally').innerHTML=I.length?`<div class="receipt">
+    <h2>The tally</h2>
+    <div class="tl"><span>Ordered <em>${g(ordered.length)}</em></span><i aria-hidden="true"></i><b>${money(oT)}</b></div>
+    <div class="tl"><span>Still to order <em>${g(todo.length)}</em></span><i aria-hidden="true"></i><b>${money(tT)}</b></div>
+    <div class="tl total"><span>Total</span><i aria-hidden="true"></i><b>${money(oT+tT)}</b></div></div>`:'';
+  $('#totals').innerHTML=`${I.length?`<div class="pile-row"><div class="pile" role="img" aria-label="${ordered.length} of ${I.length} gifts ordered">${pileHTML(I)}</div>
     <span class="pile-lab">${ordered.length===I.length?'<b>Every gift is ordered.</b> Time for cocoa.':`<b>${ordered.length} of ${I.length}</b> in the pile`}</span></div>`:''}${orderByHTML(todo.length)}`;
 
   // people tags (pile helper defined below)
