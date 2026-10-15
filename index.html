@@ -226,7 +226,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .confetti{position:fixed;width:7px;height:10px;border-radius:2px;pointer-events:none;z-index:60}
 .group-head .av{box-shadow:0 0 0 3px #fff,0 0 0 4.5px color-mix(in srgb,var(--kc) 35%,transparent)}
 .wrapper-edge{height:8px;background:repeating-linear-gradient(-45deg,color-mix(in srgb,var(--kc) 22%,#fff) 0 6px,#fff 6px 12px)}
-.sub.empty-sub{padding:16px;font-weight:500}
+.sub.empty-sub{padding:16px 16px 2px;font-weight:500}
 
 .inapp{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:start;background:var(--gold-soft);border:1px solid #F1DBA9;border-radius:16px;padding:14px 14px 14px 16px;font-size:14px;line-height:1.45}
 .inapp .ic{font-size:20px;line-height:1.2}
@@ -291,6 +291,11 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .share-btn{margin-top:6px}
 .share-notes{margin:0 0 16px;padding-left:18px;color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:6px}
 .share-notes b{color:var(--ink)}
+
+.add-row{display:flex;align-items:center;gap:8px;width:100%;border:0;border-top:1px solid var(--line);background:transparent;padding:14px 16px;font-weight:600;font-size:14px;color:var(--pine);text-align:left;transition:background .15s}
+.add-row span{width:22px;height:22px;border-radius:50%;border:1.5px dashed var(--pine);display:grid;place-items:center;font-size:15px;line-height:1}
+.add-row:hover{background:var(--pine-soft)}
+.empty-sub+.add-row{border-top:0}
 
 /* footer */
 .foot{border-top:1px solid var(--line);padding-top:24px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 24px;align-items:start;color:var(--muted);font-size:13px}
@@ -615,10 +620,10 @@ function render(){
       const ord=(a,b)=>(a.status==='ordered')-(b.status==='ordered');
       const tree=ki.filter(i=>i.bucket==='tree').sort(ord), stock=ki.filter(i=>i.bucket==='stocking').sort(ord);
       lh+=`<div class="group" style="--kc:${k.color}"><div class="wrapper-edge" aria-hidden="true"></div><div class="group-head"><div class="av sm">${k.emoji}</div><h3>${esc(k.nick)}</h3>${!isKid(k)&&k.rel?`<span class="rel">${esc(k.rel)}</span>`:''}<span class="gtotal num"><b>${money(sumItems(ki,()=>true))}</b> · ${ki.length} item${ki.length===1?'':'s'}</span></div>`;
-      if(!ki.length)lh+=`<div class="sub empty-sub">Nothing for ${esc(k.nick)} yet. Start their pile with a link above.</div>`;
+      if(!ki.length)lh+=`<div class="sub empty-sub">Nothing for ${esc(k.nick)} yet.</div>`;
       if(tree.length)lh+=`<div class="sub"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--pine)"><path d="M12 2l5 7h-3l5 7h-4l4 6H5l4-6H5l5-7H7z"/></svg>Under the tree</div>`+tree.map(itemRow).join('');
       if(stock.length)lh+=`<div class="sub"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 2h8v10c0 1 .5 2 1.5 3l1 1c2 2 2 5 0 7s-5 2-7 0l-4-4c-.6-.6-1-1.5-1-2.4V2z"/></svg>Stocking</div>`+stock.map(itemRow).join('');
-      lh+=`</div>`;
+      lh+=`<button class="add-row" data-addfor="${k.id}"><span aria-hidden="true">+</span> Add a gift for ${esc(k.nick)}</button></div>`;
     }
   }
   $('#list').innerHTML=lh;
@@ -633,6 +638,7 @@ function render(){
     else toast('Moved back to the to-order list');
   });
   document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openItem({id:b.dataset.edit}));
+  document.querySelectorAll('[data-addfor]').forEach(b=>b.onclick=()=>openItem({prefill:{kidId:b.dataset.addfor,bucket:filterBucket==='stocking'?'stocking':'tree'}}));
   document.querySelectorAll('[data-price]').forEach(b=>b.onclick=()=>{
     const it=I.find(i=>i.id===b.dataset.price);if(!it)return;
     const inp=document.createElement('input');
