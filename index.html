@@ -297,7 +297,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .foot-brand{font-family:"Grand Hotel","Brush Script MT",cursive;font-size:30px;line-height:1;color:var(--berry)}
 .foot-copy{display:flex;flex-direction:column;gap:6px;max-width:62ch}
 .foot-copy p,.foot-made{margin:0}
-.foot-made{grid-column:2;color:var(--ink);font-weight:500}
+.foot-made{grid-column:2;color:var(--ink);font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 @media (max-width:520px){.foot{grid-template-columns:1fr}.foot-made{grid-column:1}}
 
 /* sheet */
@@ -438,18 +438,6 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
     <div id="list"></div>
   </section>
 
-  <section class="vault">
-    <div class="lock"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></div>
-    <div>
-      <h3>Your list saves as you go</h3>
-      <p>It stays in this browser. Share it to copy it to your partner's phone.</p>
-    </div>
-    <div class="vault-actions">
-      <button class="btn primary" id="shareBottom">Share with your partner</button>
-      <button class="btn export" id="exportBottom">Export to spreadsheet</button>
-      <button class="btn ghost small" id="openReset">Start over</button>
-    </div>
-  </section>
 
   <footer class="foot">
     <div class="foot-brand">Sleigh</div>
@@ -457,7 +445,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
       <p>A free, simple way to keep track of holiday gifts and stocking stuffers for your kids, family, and friends.</p>
       <p>Your list lives only in your browser. We don't store it, can't see it, and have no way to access it. No accounts, no tracking, no names required.</p>
     </div>
-    <p class="foot-made">Made with <span role="img" aria-label="love">❤️</span> in Lee's Summit, MO</p>
+    <div class="foot-made"><span>Made with <span role="img" aria-label="love">❤️</span> in Lee's Summit, MO</span><button class="btn ghost small" id="openReset">Start over</button></div>
   </footer>
 </div>
 
@@ -1051,7 +1039,6 @@ function flashSaved(){
   b.hidden=false;b.classList.add('saving');$('#saveLbl').textContent='Saving…';
   clearTimeout(flashSaved.t);flashSaved.t=setTimeout(()=>{b.classList.remove('saving');$('#saveLbl').textContent='Saved'},700);
 }
-$('#exportBottom').onclick=()=>openExport();
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 
 render();
@@ -1181,7 +1168,6 @@ async function receiveShare(){
   });
 }
 $('#shareBtn').onclick=()=>openShare();
-$('#shareBottom').onclick=()=>openShare();
 addEventListener('hashchange',receiveShare);
 receiveShare();
 
