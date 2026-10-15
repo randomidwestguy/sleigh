@@ -237,7 +237,8 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
 .inapp .x:hover{background:#F6E4BC}
 
 .santa-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--berry);background:var(--berry-soft);border-radius:99px;padding:2px 8px 2px 6px;margin-left:6px;vertical-align:2px;white-space:nowrap}
-.listbar-right{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.listbar-right{display:flex;gap:6px;flex-wrap:wrap}
+@media (min-width:521px){.listbar-right{margin-left:auto}}
 .tool-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--muted);transition:color .15s,border-color .15s}
 .tool-btn:hover{color:var(--pine);border-color:var(--pine)}
 .btn.eve{background:#22314A;color:#fff;border-color:#22314A}
@@ -310,6 +311,18 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
   header .savestat{grid-column:1 / -1;grid-row:2;margin-top:0;justify-self:start}
   .brand svg{width:42px;height:auto}
 }
+
+/* tally: written like the bottom of a shopping list */
+.tally{max-width:440px;display:flex;flex-direction:column;gap:10px;font-size:17px;font-weight:500}
+.tl{display:flex;align-items:baseline;gap:10px}
+.tl span{white-space:nowrap}
+.tl em{font-style:normal;color:var(--muted);font-size:14px;margin-left:4px}
+.tl i{flex:1;min-width:16px;border-bottom:2px dotted #C3CEC8;transform:translateY(-5px)}
+.tl b{font-weight:700;font-variant-numeric:tabular-nums}
+.tl b.ordered{color:var(--pine)}
+.tl b.todo{color:#A8740E}
+.tl.total{border-top:2px solid var(--ink);padding-top:12px;margin-top:2px;font-size:20px;font-weight:700}
+.tl.total b{font-size:24px;letter-spacing:-.01em}
 
 /* footer */
 .foot{border-top:1px solid var(--line);padding-top:24px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 24px;align-items:start;color:var(--muted);font-size:13px}
@@ -579,10 +592,10 @@ function render(){
   const ordered=I.filter(i=>i.status==='ordered'),todo=I.filter(i=>i.status!=='ordered');
   const oT=sumItems(ordered,()=>true),tT=sumItems(todo,()=>true);
   const g=n=>n+(n===1?' gift':' gifts');
-  $('#totals').innerHTML=`<div class="amounts">
-    <div><span class="amt ordered num">${money(oT)}</span><span class="lab">Ordered · ${g(ordered.length)}</span></div>
-    <div><span class="amt todo num">${money(tT)}</span><span class="lab">To order · ${g(todo.length)}</span></div>
-    <div><span class="amt num">${money(oT+tT)}</span><span class="lab">Total</span></div></div>
+  $('#totals').innerHTML=`<div class="tally">
+    <div class="tl"><span>Ordered <em>${g(ordered.length)}</em></span><i aria-hidden="true"></i><b class="ordered">${money(oT)}</b></div>
+    <div class="tl"><span>Still to order <em>${g(todo.length)}</em></span><i aria-hidden="true"></i><b class="todo">${money(tT)}</b></div>
+    <div class="tl total"><span>Total</span><i aria-hidden="true"></i><b>${money(oT+tT)}</b></div></div>
     ${I.length?`<div class="pile-row"><div class="pile" role="img" aria-label="${ordered.length} of ${I.length} gifts ordered">${pileHTML(I)}</div>
     <span class="pile-lab">${ordered.length===I.length?'<b>Every gift is ordered.</b> Time for cocoa.':`<b>${ordered.length} of ${I.length}</b> in the pile`}</span></div>`:''}${orderByHTML(todo.length)}`;
 
