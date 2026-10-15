@@ -478,7 +478,7 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
     <div class="foot-brand">Sleigh</div>
     <div class="foot-copy">
       <p>A free, simple way to keep track of holiday gifts and stocking stuffers for your kids, family, and friends.</p>
-      <p>Your list lives only in your browser. We don't store it, can't see it, and have no way to access it. No accounts, no tracking, no names required.</p>
+      <p>Your list lives only in your browser. We don't store it, can't see it, and have no way to access it. No accounts, no cookies, no names required. We only count visits.</p>
     </div>
     <div class="foot-made"><span>Made with <span role="img" aria-label="love">❤️</span> in Lee's Summit, MO</span><button class="btn ghost small" id="openReset">Start over</button></div>
   </footer>
@@ -1209,6 +1209,21 @@ async function receiveShare(){
 $('#shareBtn').onclick=()=>openShare();
 addEventListener('hashchange',receiveShare);
 receiveShare();
+
+/* Cloudflare Web Analytics: cookieless visit counts. Loads only once any
+   shared list has been read and cleared from the address, so a list in a
+   share link is never sent anywhere. */
+(function(){
+  const load=()=>{
+    if(document.querySelector('script[data-cf-beacon]'))return;
+    const sc=document.createElement('script');sc.type='module';sc.defer=true;
+    sc.src='https://static.cloudflareinsights.com/beacon.min.js';
+    sc.setAttribute('data-cf-beacon','{"token": "4aba72667cbe47ea8175a7e4319052ff"}');
+    document.body.appendChild(sc);
+  };
+  const wait=()=>{location.hash.startsWith('#s=')?setTimeout(wait,600):load()};
+  wait();
+})();
 
 /* gentle snowfall */
 (function(){
