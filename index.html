@@ -432,7 +432,6 @@ header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
     <div class="listbar">
       <div class="filters" id="bucketFilter"></div>
       <div class="listbar-right">
-      <button class="btn eve" id="openEve"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 15.5A8.5 8.5 0 0 1 8.5 4a8.5 8.5 0 1 0 11.5 11.5z"/></svg>Christmas Eve view</button>
       <button class="btn export" id="openExport"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export to spreadsheet</button>
       </div>
     </div>
@@ -1015,7 +1014,6 @@ function openExport(){
   });
 }
 $('#openExport').onclick=openExport;
-$('#openEve').onclick=()=>openEve();
 $('#openReset').onclick=()=>{
   sheet(`<h2>Start over?</h2><p class="lede">This removes every kid and gift saved on this device. It can't be undone, so export a spreadsheet first if you want a copy.</p>
     <div class="sheet-actions"><button class="btn ghost" id="zExport">Export first</button><div class="right"><button class="btn" id="zNo">Cancel</button><button class="btn berry" id="zYes">Remove everything</button></div></div>`,()=>{
