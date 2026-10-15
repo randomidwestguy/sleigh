@@ -530,8 +530,27 @@ function sampleState(){
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!S.kids)S=sampleState();
-function migrate(d){(d.kids||[]).forEach(k=>{if(!k.group)k.group='kid'});(d.items||[]).forEach(i=>{if(i.status!=='todo')i.status=i.status==='idea'?'todo':'ordered'});return d}
-migrate(S);
+/* Clean every list before it is used, whether it came from this browser or a
+   share link, so a tampered link can't slip code or odd values into the page. */
+function cleanList(d){
+  const str=(v,n)=>typeof v==='string'?v.slice(0,n):'';
+  const id=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,32}$/.test(v)?v:uid();
+  const okUrl=v=>{v=str(v,2000);try{const u=new URL(v);return /^https?:$/.test(u.protocol)?u.href:''}catch(e){return ''}};
+  const kids=(Array.isArray(d&&d.kids)?d.kids:[]).slice(0,200).filter(k=>k&&typeof k==='object').map(k=>({
+    id:id(k.id),nick:str(k.nick,40)||'Someone',emoji:EMOJI.includes(k.emoji)?k.emoji:'🎁',
+    color:/^#[0-9A-Fa-f]{6}$/.test(k.color)?k.color:COLORS[0],budget:Math.max(0,+k.budget||0),
+    group:k.group==='other'?'other':'kid',rel:RELS.includes(k.rel)?k.rel:''}));
+  const ids=new Set(kids.map(k=>k.id));
+  const items=(Array.isArray(d&&d.items)?d.items:[]).slice(0,2000).filter(i=>i&&typeof i==='object'&&ids.has(i.kidId)).map(i=>{
+    const pr=i.price===null||i.price===''||i.price===undefined?null:+i.price;
+    return {id:id(i.id),kidId:i.kidId,name:str(i.name,200),url:okUrl(i.url),store:str(i.store,40),
+      price:pr===null||!isFinite(pr)?null:Math.max(0,pr),bucket:i.bucket==='stocking'?'stocking':'tree',
+      status:i.status==='ordered'?'ordered':'todo',spot:str(i.spot,120),from:i.from==='santa'?'santa':'us',
+      got:!!i.got,t:+i.t||0}});
+  return {v:1,example:!!(d&&d.example),kids,items};
+}
+function migrate(d){(d.items||[]).forEach(i=>{if(i&&i.status!=='todo')i.status=i.status==='idea'?'todo':'ordered'});return cleanList(d)}
+S=migrate(S);
 let filterKid='all', filterBucket='all', santaOnly=false;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));typeof flashSaved==='function'&&flashSaved()}catch(e){toast("This browser won't save. Try turning off private browsing.")}}
 
@@ -611,7 +630,7 @@ function render(){
     const over=k.budget&&total>k.budget;
     const nG=ki.filter(i=>i.bucket==='tree').length,nSt=ki.length-nG;
     const allSet=ki.length>0&&ki.every(i=>i.status==='ordered');
-    const parts=[];if(!isKid(k)&&k.rel)parts.push(k.rel);if(nG)parts.push(nG+(nG===1?' gift':' gifts'));if(nSt)parts.push(nSt+' in stocking');
+    const parts=[];if(!isKid(k)&&k.rel)parts.push(esc(k.rel));if(nG)parts.push(nG+(nG===1?' gift':' gifts'));if(nSt)parts.push(nSt+' in stocking');
     return `<div class="kid" role="button" tabindex="0" style="--kc:${k.color}" data-kid="${k.id}" aria-pressed="${filterKid===k.id}">
       <button class="kid-edit" data-editkid="${k.id}" aria-label="Edit ${esc(k.nick)}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button>
       <div class="kid-top"><div class="av">${k.emoji}</div><div><div class="kid-name">${esc(k.nick)}</div>
@@ -979,7 +998,7 @@ function summaryRows(){
   const t=sumItems(S.items,()=>true);r.push(['Everyone','',S.items.filter(i=>i.bucket==='tree').length,S.items.filter(i=>i.bucket==='stocking').length,t,'','']);
   return r;
 }
-function toTSV(rows){return rows.map(r=>r.map(c=>String(c).replace(/[\t\r\n]+/g,' ')).join('\t')).join('\n')}
+function toTSV(rows){return rows.map(r=>r.map(c=>{let v=String(c).replace(/[\t\r\n]+/g,' ');if(typeof c==='string'&&/^[=+\-@]/.test(v))v="'"+v;return v}).join('\t')).join('\n')}
 let xlsxLoading;
 function loadXLSX(){
   if(window.XLSX)return Promise.resolve();
@@ -1148,7 +1167,7 @@ async function decodeShare(code){
   let text;
   if(kind==='z'){const buf=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();text=new TextDecoder().decode(buf)}
   else text=new TextDecoder().decode(bytes);
-  return unpackList(JSON.parse(text));
+  return cleanList(unpackList(JSON.parse(text)));
 }
 const SHARE_ICON='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
 async function openShare(){
