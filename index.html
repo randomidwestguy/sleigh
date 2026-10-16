@@ -1107,16 +1107,16 @@ render();
   if(!/FBAN|FBAV|FB_IAB|FBIOS|Instagram|Messenger|LinkedInApp|Snapchat|Twitter|TikTok|musical_ly|BytedanceWebview|Pinterest|Line\/|GSA\/|KAKAOTALK|WhatsApp/i.test(ua))return;
   try{if(localStorage.getItem('sleigh.inappDismissed'))return}catch(e){}
   const ios=/iPhone|iPad|iPod/i.test(ua);
-  const how=ios?'Tap the <b style="display:inline">•••</b> or compass button, then <b style="display:inline">Open in Safari</b>.':'Tap the <b style="display:inline">⋮</b> menu, then <b style="display:inline">Open in Chrome</b>.';
+  const how=ios?'Tap the <b style="display:inline">•••</b> or share button and choose to open it in your browser.':'Tap the <b style="display:inline">⋮</b> menu and choose to open it in your browser.';
   const el=$('#inapp');el.className='inapp';el.setAttribute('role','note');
-  el.innerHTML=`<span class="ic" aria-hidden="true">🧭</span><div><b>Open Sleigh in ${ios?'Safari':'your browser'} to keep your list</b>
+  el.innerHTML=`<span class="ic" aria-hidden="true">🧭</span><div><b>Open Sleigh in the browser of your choice to keep your list</b>
     <p>You're inside another app's browser, which can lose your list when you leave. ${how}</p>
     <div class="acts"><button class="btn small" id="inappCopy">Copy link instead</button></div></div>
     <button class="x" id="inappX" aria-label="Dismiss">×</button>`;
   el.hidden=false;
   $('#inappX').onclick=()=>{el.hidden=true;try{localStorage.setItem('sleigh.inappDismissed','1')}catch(e){}};
   $('#inappCopy').onclick=()=>{const u=location.href.split('#')[0];
-    copyText(u,()=>toast(`Link copied. Paste it into ${ios?'Safari':'your browser'}.`),()=>toast(u))};
+    copyText(u,()=>toast('Link copied. Paste it into the browser of your choice.'),()=>toast(u))};
 })();
 
 /* Copy that works everywhere: the modern clipboard where the page is secure,
